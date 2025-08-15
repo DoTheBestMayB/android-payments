@@ -38,34 +38,26 @@ class NewCardViewModel : ViewModel() {
     }
 
     private fun setCardNumber(cardNumber: TextFieldValue) {
-        if (cardNumber.text.length > CardInputValidator.CARD_NUMBER_MAX_LENGTH || cardNumber.text.lastOrNull()
-                ?.isDigit() == false
-        ) {
-            return
-        }
-        _cardState.update {
-            if (shouldAddSignAtCardNumber(
-                    it.cardNumber.text,
-                    cardNumber.text
-                ) && cardNumber.text.length != CardInputValidator.CARD_NUMBER_MAX_LENGTH
-            ) {
-                val newText = "${cardNumber.text}-"
-                it.copy(
-                    cardNumber = TextFieldValue(
-                        text = newText,
-                        selection = TextRange(newText.length)
-                    )
-                )
-            } else {
-                it.copy(cardNumber = cardNumber)
+        val digits = cardNumber.text.filter { it.isDigit() }.take(CARD_NUMBER_MAX_LENGTH)
+
+        val formatted = buildString {
+            for ((i, digit) in digits.withIndex()) {
+                if (i != 0 && i % 4 == 0) {
+                    append('-')
+                }
+                append(digit)
             }
         }
-    }
 
-    private fun shouldAddSignAtCardNumber(beforeText: String, afterText: String): Boolean {
-        return beforeText.length % 5 == 3 && afterText.length % 5 == 4
+        _cardState.update {
+            it.copy(
+                cardNumber = TextFieldValue(
+                    text = formatted,
+                    selection = TextRange(formatted.length)
+                )
+            )
+        }
     }
-
 
     private fun setExpiredDate(expiredDate: TextFieldValue) {
         val digits = expiredDate.text.filter { it.isDigit() }.take(4)
@@ -95,10 +87,6 @@ class NewCardViewModel : ViewModel() {
                 )
             )
         }
-    }
-
-    private fun shouldAddSignAtExpiredDate(beforeText: String, afterText: String): Boolean {
-        return beforeText.length == 2 && afterText.length == 3
     }
 
     private fun setOwnerName(ownerName: String) {
@@ -136,6 +124,7 @@ class NewCardViewModel : ViewModel() {
     }
 
     companion object {
+        private const val CARD_NUMBER_MAX_LENGTH = 16
         private val FIRST_MONTH_DIGIT_RANGE = '0'..'1'
         private val MONTH_RANGE = 1..12
     }
