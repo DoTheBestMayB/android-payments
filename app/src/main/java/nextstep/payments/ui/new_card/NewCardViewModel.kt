@@ -8,8 +8,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import nextstep.payments.data.card.CardEntity
+import nextstep.payments.data.card.PaymentCardRepository
 
-class NewCardViewModel : ViewModel() {
+class NewCardViewModel(
+    private val cardRepository: PaymentCardRepository = PaymentCardRepository,
+) : ViewModel() {
 
     private val _cardState = MutableStateFlow(NewCardState())
     val cardState = _cardState.asStateFlow()
@@ -103,7 +107,14 @@ class NewCardViewModel : ViewModel() {
             CardInputValidator.isCardOwnerNameValid(_cardState.value.ownerName) &&
             CardInputValidator.isPasswordValid(_cardState.value.password)
         ) {
-            // TODO : 카드 추가하기
+            cardRepository.addCard(
+                CardEntity(
+                    cardNumber = _cardState.value.cardNumber,
+                    expiredDate = _cardState.value.expiredDate,
+                    ownerName = _cardState.value.ownerName,
+                    password = _cardState.value.password,
+                )
+            )
 
             viewModelScope.launch {
                 eventChannel.send(NewCardEvent.CardAdded)
