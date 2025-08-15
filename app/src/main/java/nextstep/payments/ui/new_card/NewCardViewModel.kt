@@ -38,7 +38,12 @@ class NewCardViewModel : ViewModel() {
     }
 
     private fun setCardNumber(cardNumber: TextFieldValue) {
-        val digits = cardNumber.text.filter { it.isDigit() }.take(CARD_NUMBER_MAX_LENGTH)
+        val digits = cardNumber.text.filter { it.isDigit() }
+
+        // 최대 길이를 초과한 입력은 무시
+        if (digits.length > CARD_NUMBER_MAX_LENGTH) {
+            return
+        }
 
         val formatted = buildString {
             for ((i, digit) in digits.withIndex()) {
@@ -68,7 +73,12 @@ class NewCardViewModel : ViewModel() {
     }
 
     private fun setExpiredDate(expiredDate: TextFieldValue) {
-        val digits = expiredDate.text.filter { it.isDigit() }.take(4)
+        val digits = expiredDate.text.filter { it.isDigit() }
+
+        // 최대 길이를 초과한 입력은 무시
+        if (digits.length > CARD_EXPIRED_DATE_MAX_LENGTH) {
+            return
+        }
 
         if (digits.length >= 2) {
             val mm = digits.substring(0, 2).toInt()
@@ -141,6 +151,7 @@ class NewCardViewModel : ViewModel() {
 
     companion object {
         private const val CARD_NUMBER_MAX_LENGTH = 16
+        private const val CARD_EXPIRED_DATE_MAX_LENGTH = 4
         private val FIRST_MONTH_DIGIT_RANGE = '0'..'1'
         private val MONTH_RANGE = 1..12
     }

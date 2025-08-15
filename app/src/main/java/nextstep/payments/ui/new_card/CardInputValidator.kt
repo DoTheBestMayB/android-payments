@@ -3,7 +3,7 @@ package nextstep.payments.ui.new_card
 
 object CardInputValidator {
     const val CARD_TEXT_NUMBER_MAX_LENGTH = 19
-    const val CARD_EXPIRED_DATE_MAX_LENGTH = 5
+    const val CARD_EXPIRED_DATE_TEXT_MAX_LENGTH = 5
     const val CARD_OWNER_NAME_MAX_LENGTH = 30
     const val CARD_PASSWORD_MAX_LENGTH = 4
 
@@ -12,7 +12,7 @@ object CardInputValidator {
     }
 
     fun isExpiredDateValid(expiredDate: String): Boolean {
-        return expiredDate.length == CARD_EXPIRED_DATE_MAX_LENGTH && expiredDate.all { it.isDigit() || it == '/' }
+        return expiredDate.length == CARD_EXPIRED_DATE_TEXT_MAX_LENGTH && expiredDate.all { it.isDigit() || it == '/' }
     }
 
     fun isCardOwnerNameValid(cardOwnerName: String): Boolean {
