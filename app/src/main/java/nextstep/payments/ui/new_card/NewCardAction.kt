@@ -7,4 +7,6 @@ sealed interface NewCardAction {
     data class OnExpiredDateChange(val expiredDate: TextFieldValue) : NewCardAction
     data class OnOwnerNameChange(val ownerName: String) : NewCardAction
     data class OnPasswordChange(val password: String) : NewCardAction
+    data object OnAddCardClick : NewCardAction
+    data object OnBackClick: NewCardAction
 }

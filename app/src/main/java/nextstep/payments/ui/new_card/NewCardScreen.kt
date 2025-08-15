@@ -11,7 +11,9 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -40,11 +42,24 @@ fun NewCardScreenRoot(
             NewCardEvent.CardAdded -> {
                 navigateToCardList()
             }
+            NewCardEvent.NavigateBack -> {
+                navigateToCardList()
+            }
+        }
+    }
+
+    val isAddEnabled by remember(state) {
+        derivedStateOf {
+            CardInputValidator.isCardNumberValid(state.cardNumber.text) &&
+                    CardInputValidator.isExpiredDateValid(state.expiredDate.text) &&
+                    CardInputValidator.isCardOwnerNameValid(state.ownerName) &&
+                    CardInputValidator.isPasswordValid(state.password)
         }
     }
 
     NewCardScreen(
         state = state,
+        isAddEnabled = isAddEnabled,
         onAction = viewModel::onAction,
         modifier = modifier,
     )
@@ -53,11 +68,22 @@ fun NewCardScreenRoot(
 @Composable
 fun NewCardScreen(
     state: NewCardState,
+    isAddEnabled: Boolean,
     onAction: (NewCardAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
-        topBar = { NewCardTopBar(onBackClick = { TODO() }, onSaveClick = { TODO() }) },
+        topBar = {
+            NewCardTopBar(
+                onBackClick = {
+                    onAction(NewCardAction.OnBackClick)
+                },
+                onSaveClick = {
+                    onAction(NewCardAction.OnAddCardClick)
+                },
+                isAddEnabled = isAddEnabled,
+            )
+        },
         modifier = modifier
     ) { innerPadding ->
         Column(
@@ -137,6 +163,7 @@ private fun NewCardScreenPreview() {
                 ownerName = "홍길동",
                 password = "0000",
             ),
+            isAddEnabled = true,
             onAction = { },
         )
     }

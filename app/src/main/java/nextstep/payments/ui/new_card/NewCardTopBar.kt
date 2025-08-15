@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 fun NewCardTopBar(
     onBackClick: () -> Unit,
     onSaveClick: () -> Unit,
+    isAddEnabled: Boolean,
     modifier: Modifier = Modifier,
 ) {
     TopAppBar(
@@ -29,7 +30,10 @@ fun NewCardTopBar(
             }
         },
         actions = {
-            IconButton(onClick = { onSaveClick() }) {
+            IconButton(
+                onClick = { onSaveClick() },
+                enabled = isAddEnabled
+            ) {
                 Icon(
                     imageVector = Icons.Filled.Check,
                     contentDescription = "완료",
