@@ -23,15 +23,25 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import nextstep.payments.R
+import nextstep.payments.common.ObserveAsEvents
 import nextstep.payments.ui.components.PaymentCard
 import nextstep.payments.ui.theme.PaymentsTheme
 
 @Composable
-fun NewCardScreen(
+fun NewCardScreenRoot(
+    navigateToCardList: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: NewCardViewModel = viewModel(),
 ) {
     val state by viewModel.cardState.collectAsStateWithLifecycle()
+
+    ObserveAsEvents(viewModel.events) { event ->
+        when (event) {
+            NewCardEvent.CardAdded -> {
+                navigateToCardList()
+            }
+        }
+    }
 
     NewCardScreen(
         state = state,
@@ -41,7 +51,7 @@ fun NewCardScreen(
 }
 
 @Composable
-private fun NewCardScreen(
+fun NewCardScreen(
     state: NewCardState,
     onAction: (NewCardAction) -> Unit,
     modifier: Modifier = Modifier,

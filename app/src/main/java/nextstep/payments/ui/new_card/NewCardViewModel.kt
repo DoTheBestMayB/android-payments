@@ -3,14 +3,19 @@ package nextstep.payments.ui.new_card
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 
 class NewCardViewModel : ViewModel() {
 
     private val _cardState = MutableStateFlow(NewCardState())
     val cardState = _cardState.asStateFlow()
+
+    private val eventChannel = Channel<NewCardEvent> { }
+    val events = eventChannel.receiveAsFlow()
 
     fun onAction(action: NewCardAction) {
         when (action) {
