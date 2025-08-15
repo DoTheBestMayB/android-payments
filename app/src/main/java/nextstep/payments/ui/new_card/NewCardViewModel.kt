@@ -49,11 +49,19 @@ class NewCardViewModel : ViewModel() {
             }
         }
 
+        // 커서 보정
+        val digitsBeforeCursor = cardNumber.text
+            .take(cardNumber.selection.end.coerceIn(0, cardNumber.text.length))
+            .count { it.isDigit() }
+            .coerceAtMost(digits.length)
+
+        val newCursor = digitsBeforeCursor + (digitsBeforeCursor / 4)
+
         _cardState.update {
             it.copy(
                 cardNumber = TextFieldValue(
                     text = formatted,
-                    selection = TextRange(formatted.length)
+                    selection = TextRange(newCursor)
                 )
             )
         }
@@ -79,11 +87,19 @@ class NewCardViewModel : ViewModel() {
             else -> digits.substring(0, 2) + "/" + digits.substring(2)
         }
 
+        // 커서 보정
+        val digitsBeforeCursor = expiredDate.text
+            .take(expiredDate.selection.end.coerceIn(0, expiredDate.text.length))
+            .count { it.isDigit() }
+            .coerceAtMost(digits.length)
+
+        val newCursor = digitsBeforeCursor + (digitsBeforeCursor / 2)
+
         _cardState.update {
             it.copy(
                 expiredDate = TextFieldValue(
                     text = formatted,
-                    selection = TextRange(formatted.length)
+                    selection = TextRange(newCursor)
                 )
             )
         }
