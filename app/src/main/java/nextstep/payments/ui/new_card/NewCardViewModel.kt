@@ -1,7 +1,5 @@
 package nextstep.payments.ui.new_card
 
-import androidx.compose.ui.text.TextRange
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.channels.Channel
@@ -37,43 +35,23 @@ class NewCardViewModel : ViewModel() {
         }
     }
 
-    private fun setCardNumber(cardNumber: TextFieldValue) {
-        val digits = cardNumber.text.filter { it.isDigit() }
+    private fun setCardNumber(cardNumber: String) {
+        val digits = cardNumber.filter { it.isDigit() }
 
         // 최대 길이를 초과한 입력은 무시
         if (digits.length > CARD_NUMBER_MAX_LENGTH) {
             return
         }
 
-        val formatted = buildString {
-            for ((i, digit) in digits.withIndex()) {
-                if (i != 0 && i % 4 == 0) {
-                    append('-')
-                }
-                append(digit)
-            }
-        }
-
-        // 커서 보정
-        val digitsBeforeCursor = cardNumber.text
-            .take(cardNumber.selection.end.coerceIn(0, cardNumber.text.length))
-            .count { it.isDigit() }
-            .coerceAtMost(digits.length)
-
-        val newCursor = digitsBeforeCursor + (digitsBeforeCursor / 4)
-
         _cardState.update {
             it.copy(
-                cardNumber = TextFieldValue(
-                    text = formatted,
-                    selection = TextRange(newCursor)
-                )
+                cardNumber = digits
             )
         }
     }
 
-    private fun setExpiredDate(expiredDate: TextFieldValue) {
-        val digits = expiredDate.text.filter { it.isDigit() }
+    private fun setExpiredDate(expiredDate: String) {
+        val digits = expiredDate.filter { it.isDigit() }
 
         // 최대 길이를 초과한 입력은 무시
         if (digits.length > CARD_EXPIRED_DATE_MAX_LENGTH) {
@@ -92,25 +70,9 @@ class NewCardViewModel : ViewModel() {
             }
         }
 
-        val formatted = when {
-            digits.length <= 2 -> digits
-            else -> digits.substring(0, 2) + "/" + digits.substring(2)
-        }
-
-        // 커서 보정
-        val digitsBeforeCursor = expiredDate.text
-            .take(expiredDate.selection.end.coerceIn(0, expiredDate.text.length))
-            .count { it.isDigit() }
-            .coerceAtMost(digits.length)
-
-        val newCursor = digitsBeforeCursor + (digitsBeforeCursor / 2)
-
         _cardState.update {
             it.copy(
-                expiredDate = TextFieldValue(
-                    text = formatted,
-                    selection = TextRange(newCursor)
-                )
+                expiredDate = digits,
             )
         }
     }
@@ -136,8 +98,8 @@ class NewCardViewModel : ViewModel() {
 
     // isAddEnabled 조건을 통해 입력 값이 올바른지 검증하기는 했으나, 여기서 한 번 더 입력 조건이 올바른지 학인하도록 했습니다.
     private fun addCard() {
-        if (CardInputValidator.isCardNumberValid(_cardState.value.cardNumber.text) &&
-            CardInputValidator.isExpiredDateValid(_cardState.value.expiredDate.text) &&
+        if (CardInputValidator.isCardNumberValid(_cardState.value.cardNumber) &&
+            CardInputValidator.isExpiredDateValid(_cardState.value.expiredDate) &&
             CardInputValidator.isCardOwnerNameValid(_cardState.value.ownerName) &&
             CardInputValidator.isPasswordValid(_cardState.value.password)
         ) {

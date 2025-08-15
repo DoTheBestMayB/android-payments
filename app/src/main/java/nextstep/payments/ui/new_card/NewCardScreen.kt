@@ -26,6 +26,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import nextstep.payments.R
 import nextstep.payments.common.ObserveAsEvents
+import nextstep.payments.ui.common.CardExpiryTransformation
+import nextstep.payments.ui.common.CardNumberTransformation
 import nextstep.payments.ui.components.PaymentCard
 import nextstep.payments.ui.theme.PaymentsTheme
 
@@ -50,8 +52,8 @@ fun NewCardScreenRoot(
 
     val isAddEnabled by remember(state) {
         derivedStateOf {
-            CardInputValidator.isCardNumberValid(state.cardNumber.text) &&
-                    CardInputValidator.isExpiredDateValid(state.expiredDate.text) &&
+            CardInputValidator.isCardNumberValid(state.cardNumber) &&
+                    CardInputValidator.isExpiredDateValid(state.expiredDate) &&
                     CardInputValidator.isCardOwnerNameValid(state.ownerName) &&
                     CardInputValidator.isPasswordValid(state.password)
         }
@@ -107,6 +109,7 @@ fun NewCardScreen(
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,
                 ),
+                visualTransformation = CardNumberTransformation(),
                 label = { Text(stringResource(R.string.card_number_label)) },
                 placeholder = { Text(stringResource(R.string.card_number_placeholder)) },
                 modifier = Modifier.fillMaxWidth(),
@@ -120,6 +123,7 @@ fun NewCardScreen(
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,
                 ),
+                visualTransformation = CardExpiryTransformation(),
                 label = { Text(stringResource(R.string.expired_date_label)) },
                 placeholder = { Text(stringResource(R.string.expired_date_placeholder)) },
                 modifier = Modifier.fillMaxWidth(),
@@ -158,8 +162,8 @@ private fun NewCardScreenPreview() {
     PaymentsTheme {
         NewCardScreen(
             state = NewCardState(
-                cardNumber = TextFieldValue("1111-1111-1111-1111"),
-                expiredDate = TextFieldValue("00 / 00"),
+                cardNumber = "1111111111111111",
+                expiredDate = "0000",
                 ownerName = "홍길동",
                 password = "0000",
             ),
