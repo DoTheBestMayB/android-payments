@@ -68,23 +68,32 @@ class NewCardViewModel : ViewModel() {
 
 
     private fun setExpiredDate(expiredDate: TextFieldValue) {
-        if (expiredDate.text.length > CardInputValidator.CARD_EXPIRED_DATE_MAX_LENGTH
-            || expiredDate.text.lastOrNull()?.isDigit() == false
-        ) {
-            return
-        }
-        _cardState.update {
-            if (shouldAddSignAtExpiredDate(it.expiredDate.text, expiredDate.text)) {
-                val newText = "${expiredDate.text.substring(0, 2)}/${expiredDate.text[2]}"
-                it.copy(
-                    expiredDate = TextFieldValue(
-                        text = newText,
-                        selection = TextRange(newText.length)
-                    )
-                )
-            } else {
-                it.copy(expiredDate = expiredDate)
+        val digits = expiredDate.text.filter { it.isDigit() }.take(4)
+
+        if (digits.length >= 2) {
+            val mm = digits.substring(0, 2).toInt()
+            if (mm !in MONTH_RANGE) {
+                return
             }
+        } else if (digits.length == 1) {
+            val first = digits[0]
+            if (first !in FIRST_MONTH_DIGIT_RANGE) {
+                return
+            }
+        }
+
+        val formatted = when {
+            digits.length <= 2 -> digits
+            else -> digits.substring(0, 2) + "/" + digits.substring(2)
+        }
+
+        _cardState.update {
+            it.copy(
+                expiredDate = TextFieldValue(
+                    text = formatted,
+                    selection = TextRange(formatted.length)
+                )
+            )
         }
     }
 
@@ -124,5 +133,10 @@ class NewCardViewModel : ViewModel() {
                 eventChannel.send(NewCardEvent.CardAdded)
             }
         }
+    }
+
+    companion object {
+        private val FIRST_MONTH_DIGIT_RANGE = '0'..'1'
+        private val MONTH_RANGE = 1..12
     }
 }
