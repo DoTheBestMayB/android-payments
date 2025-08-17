@@ -14,7 +14,7 @@ import nextstep.payments.ui.theme.PaymentsTheme
 
 class MainActivity : ComponentActivity() {
 
-    private val viewModel by viewModels<CardListViewModel>()
+    private val viewModel by viewModels<CardListViewModel> { CardListViewModel.Factory }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
