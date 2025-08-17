@@ -43,7 +43,7 @@ class NewCardViewModel(
         val digits = cardNumber.filter { it.isDigit() }
 
         // 최대 길이를 초과한 입력은 무시
-        if (digits.length > CARD_NUMBER_MAX_LENGTH) {
+        if (digits.length > CardInputValidator.CARD_NUMBER_MAX_LENGTH) {
             return
         }
 
@@ -58,7 +58,7 @@ class NewCardViewModel(
         val digits = expiredDate.filter { it.isDigit() }
 
         // 최대 길이를 초과한 입력은 무시
-        if (digits.length > CARD_EXPIRED_DATE_MAX_LENGTH) {
+        if (digits.length > CardInputValidator.CARD_EXPIRED_DATE_MAX_LENGTH) {
             return
         }
 
@@ -123,8 +123,6 @@ class NewCardViewModel(
     }
 
     companion object {
-        private const val CARD_NUMBER_MAX_LENGTH = 16
-        private const val CARD_EXPIRED_DATE_MAX_LENGTH = 4
         private val FIRST_MONTH_DIGIT_RANGE = '0'..'1'
         private val MONTH_RANGE = 1..12
     }
