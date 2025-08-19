@@ -1,5 +1,6 @@
 package nextstep.payments.ui.new_card
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -42,10 +44,19 @@ fun NewCardScreenRoot(
 ) {
     val state by viewModel.cardState.collectAsStateWithLifecycle()
 
+    // Q. ObserveAsEvents block은 composable block이 아니기 때문에, 여기서 context와 문구를 선언한 후 사용했습니다.
+    // 그런데 이렇게 작성하면 사용되는 장소와 사용하는 장소가 분리되어 적절하지 않다고 생각됩니다.
+    // 어떻게 수정하는 것이 좋을지 궁금합니다.
+    val context = LocalContext.current
+    val cardAddFailMessage = stringResource(R.string.card_list_add_new_card_fail)
+
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
-            NewCardEvent.CardAdded -> {
+            NewCardEvent.CardAddSuccess -> {
                 navigateToCardList()
+            }
+            NewCardEvent.CardAddFail -> {
+                Toast.makeText(context, cardAddFailMessage, Toast.LENGTH_SHORT).show()
             }
             NewCardEvent.NavigateBack -> {
                 navigateToCardList()

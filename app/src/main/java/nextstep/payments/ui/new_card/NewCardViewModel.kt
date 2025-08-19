@@ -107,7 +107,7 @@ class NewCardViewModel(
             CardInputValidator.isCardOwnerNameValid(_cardState.value.ownerName) &&
             CardInputValidator.isPasswordValid(_cardState.value.password)
         ) {
-            cardRepository.addCard(
+            val isSuccess = cardRepository.addCard(
                 CardEntity(
                     cardNumber = _cardState.value.cardNumber,
                     expiredDate = _cardState.value.expiredDate,
@@ -116,8 +116,14 @@ class NewCardViewModel(
                 )
             )
 
+            val event = if (isSuccess) {
+                NewCardEvent.CardAddSuccess
+            } else {
+                NewCardEvent.CardAddFail
+            }
+
             viewModelScope.launch {
-                eventChannel.send(NewCardEvent.CardAdded)
+                eventChannel.send(event)
             }
         }
     }
