@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
@@ -125,6 +126,7 @@ fun NewCardScreen(
                 },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Next,
                 ),
                 visualTransformation = CardNumberTransformation(),
                 label = { Text(stringResource(R.string.card_number_label)) },
@@ -139,6 +141,7 @@ fun NewCardScreen(
                 },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Next,
                 ),
                 visualTransformation = CardExpiryTransformation(),
                 label = { Text(stringResource(R.string.expired_date_label)) },
@@ -151,6 +154,9 @@ fun NewCardScreen(
                 onValueChange = {
                     onAction(NewCardAction.OnOwnerNameChange(it))
                 },
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Next,
+                ),
                 label = { Text(stringResource(R.string.owner_name_label)) },
                 placeholder = { Text(stringResource(R.string.owner_name_placeholder)) },
                 modifier = Modifier.fillMaxWidth(),
@@ -163,6 +169,7 @@ fun NewCardScreen(
                 },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Done,
                 ),
                 label = { Text(stringResource(R.string.password_label)) },
                 placeholder = { Text(stringResource(R.string.password_placeholder)) },
