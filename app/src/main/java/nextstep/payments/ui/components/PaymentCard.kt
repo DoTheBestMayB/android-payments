@@ -138,7 +138,6 @@ private fun PaymentCardPreview() {
                 cardNumber = "1111111111111111",
                 expiredDate = "1111",
                 ownerName = "Elon Reeve Musk Long Long Long",
-                password = "1234",
             )
         )
     }

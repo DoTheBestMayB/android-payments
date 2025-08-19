@@ -8,5 +8,4 @@ fun CardEntity.toUi(): CreditCard =
         cardNumber = cardNumber,
         expiredDate = expiredDate,
         ownerName = ownerName,
-        password = password
     )

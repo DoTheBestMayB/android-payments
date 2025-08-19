@@ -156,7 +156,6 @@ public class CardListScreenPreviewParameterProvider : PreviewParameterProvider<C
                         cardNumber = "1111111111111111",
                         expiredDate = "0000",
                         ownerName = "홍길동",
-                        password = "0000",
                     )
                 )
             ),
@@ -167,19 +166,16 @@ public class CardListScreenPreviewParameterProvider : PreviewParameterProvider<C
                             cardNumber = "4111-1111-1111-1111",
                             expiredDate = "12/27",
                             ownerName = "Kim Minsoo",
-                            password = "1234"
                         ),
                         CreditCard(
                             cardNumber = "5500-0000-0000-0004",
                             expiredDate = "07/26",
                             ownerName = "Lee Hana",
-                            password = "5678"
                         ),
                         CreditCard(
                             cardNumber = "3400-000000-00009",
                             expiredDate = "03/28",
                             ownerName = "Park Jiwon",
-                            password = "9876"
                         )
                     )
                 )
