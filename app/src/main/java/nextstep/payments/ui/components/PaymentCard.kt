@@ -1,10 +1,7 @@
 package nextstep.payments.ui.components
 
-import android.R.attr.end
-import android.R.attr.top
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.TextAutoSize
@@ -14,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -61,9 +59,10 @@ fun PaymentCard(
             text = cardInfo.cardNumber.maskCardNumber(),
             modifier = Modifier
                 .constrainAs(cardNumber) {
-                    start.linkTo(parent.start, 14.dp)
+                    start.linkTo(chip.start)
                     end.linkTo(parent.end, 14.dp)
                     top.linkTo(chip.bottom, margin = 8.dp)
+
                     width = Dimension.fillToConstraints // Composable width가 제약에 맞게 늘어나도록 설정
                 },
             color = Color.White,
@@ -71,11 +70,50 @@ fun PaymentCard(
             maxLines = 1,
             autoSize = TextAutoSize.StepBased() // Material3 version 1.4에 추가된 autoSize 사용. ref: https://stackoverflow.com/a/79704166/11722881
         )
+        Text(
+            text = cardInfo.ownerName,
+            modifier = Modifier
+                .constrainAs(ownerName) {
+                    start.linkTo(chip.start)
+                    end.linkTo(expiredDate.start)
+                    top.linkTo(cardNumber.bottom)
+                    bottom.linkTo(
+                        parent.bottom,
+                        8.dp
+                    ) // 이렇게 설정할 경우, CardNumber Text Composable과 일부가 겹치지만, 대안이 떠오르지 않네요.
+
+                    width = Dimension.fillToConstraints
+                },
+            color = Color.White,
+            fontWeight = FontWeight.W500,
+            autoSize = TextAutoSize.StepBased(maxFontSize = 12.sp),
+            maxLines = 1,
+            textAlign = TextAlign.Start,
+        )
+
+        Text(
+            text = cardInfo.expiredDate.expiredFormat(),
+            modifier = Modifier
+                .constrainAs(expiredDate) {
+                    start.linkTo(ownerName.end)
+                    end.linkTo(parent.end, margin = 14.dp)
+                    top.linkTo(ownerName.top)
+                    bottom.linkTo(parent.bottom, 8.dp)
+
+                    width = Dimension.wrapContent
+                    height = Dimension.fillToConstraints
+                },
+            color = Color.White,
+            fontWeight = FontWeight.W500,
+            maxLines = 1,
+            autoSize = TextAutoSize.StepBased(),
+            textAlign = TextAlign.End,
+        )
     }
 }
 
 private fun String.maskCardNumber(): String {
-    val groups = chunked(4)
+    val groups = filter { it.isDigit() }.chunked(4)
 
     return groups.mapIndexed { index, group ->
         if (index < 2) {
@@ -86,6 +124,11 @@ private fun String.maskCardNumber(): String {
     }.joinToString(" - ")
 }
 
+private fun String.expiredFormat(): String {
+    val groups = filter { it.isDigit() }.chunked(2)
+    return groups.joinToString(" / ")
+}
+
 @Preview
 @Composable
 private fun PaymentCardPreview() {
@@ -94,7 +137,7 @@ private fun PaymentCardPreview() {
             cardInfo = CreditCard(
                 cardNumber = "1111111111111111",
                 expiredDate = "1111",
-                ownerName = "홍길동",
+                ownerName = "Elon Reeve Musk Long Long Long",
                 password = "1234",
             )
         )
