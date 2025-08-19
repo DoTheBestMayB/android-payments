@@ -8,7 +8,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 class CardNumberTransformation(
     private val groupSize: Int = 4,
     private val sep: Char = '-',
-): VisualTransformation {
+) : VisualTransformation {
 
     /**
      * ViewModel에서 digit만 filtering 했으나, 여기서 한 번 더 필터링 했습니다.
@@ -24,7 +24,7 @@ class CardNumberTransformation(
             }
         }
         // OffsetMapping : cursor 위치를 계산하는 클래스
-        val offset = object: OffsetMapping {
+        val offset = object : OffsetMapping {
             override fun originalToTransformed(offset: Int): Int {
                 val sepCount = offset / groupSize
                 return (offset + sepCount).coerceAtMost(out.length)

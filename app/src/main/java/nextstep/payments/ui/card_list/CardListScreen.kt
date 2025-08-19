@@ -144,7 +144,7 @@ fun CardListScreen(
     }
 }
 
-public class CardListScreenPreviewParameterProvider : PreviewParameterProvider<CardListState> {
+class CardListScreenPreviewParameterProvider : PreviewParameterProvider<CardListState> {
     override val values: Sequence<CardListState>
         get() = sequenceOf(
             CardListState(
