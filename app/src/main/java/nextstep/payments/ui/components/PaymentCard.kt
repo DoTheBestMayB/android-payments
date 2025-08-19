@@ -18,6 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import nextstep.payments.ui.common.model.CreditCard
 import nextstep.payments.ui.theme.PaymentsTheme
 
@@ -63,9 +64,12 @@ fun PaymentCard(
                     start.linkTo(parent.start, 14.dp)
                     end.linkTo(parent.end, 14.dp)
                     top.linkTo(chip.bottom, margin = 8.dp)
+                    width = Dimension.fillToConstraints // Composable width가 제약에 맞게 늘어나도록 설정
                 },
             color = Color.White,
             fontWeight = FontWeight.W500,
+            maxLines = 1,
+            autoSize = TextAutoSize.StepBased() // Material3 version 1.4에 추가된 autoSize 사용. ref: https://stackoverflow.com/a/79704166/11722881
         )
     }
 }
@@ -79,7 +83,7 @@ private fun String.maskCardNumber(): String {
         } else {
             "*".repeat(group.length)
         }
-    }.joinToString("-")
+    }.joinToString(" - ")
 }
 
 @Preview
