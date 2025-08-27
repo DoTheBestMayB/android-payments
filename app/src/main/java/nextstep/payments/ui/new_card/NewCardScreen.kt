@@ -1,7 +1,6 @@
 package nextstep.payments.ui.new_card
 
 import android.widget.Toast
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -104,6 +103,7 @@ fun NewCardScreen(
                 isAddEnabled = isAddEnabled,
             )
         },
+        containerColor = Color.White,
         modifier = modifier
     ) { innerPadding ->
         Column(
@@ -112,7 +112,6 @@ fun NewCardScreen(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
-                .background(Color.White)
                 .padding(horizontal = 24.dp)
         ) {
             Spacer(modifier = Modifier.height(14.dp))

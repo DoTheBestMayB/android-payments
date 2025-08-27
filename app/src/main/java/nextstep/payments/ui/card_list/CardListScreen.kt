@@ -2,7 +2,6 @@
 
 package nextstep.payments.ui.card_list
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -57,6 +56,7 @@ fun CardListScreen(
 ) {
     Scaffold(
         modifier = modifier,
+        containerColor = Color.White,
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
@@ -121,8 +121,7 @@ private fun EmptyCardScreen(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
-            .fillMaxSize()
-            .background(Color.White),
+            .fillMaxSize(),
     ) {
         Text(
             text = stringResource(R.string.card_list_add_new_card),
@@ -149,7 +148,6 @@ private fun ManyCardScreen(
         verticalArrangement = Arrangement.spacedBy(32.dp),
         modifier = modifier
             .fillMaxSize()
-            .background(Color.White)
     ) {
         items(
             items = state.creditCards,
@@ -173,8 +171,7 @@ fun OneCardScreen(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
-            .fillMaxSize()
-            .background(Color.White),
+            .fillMaxSize(),
     ) {
         PaymentCard(
             cardInfo = state.creditCard
