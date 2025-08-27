@@ -56,7 +56,7 @@ fun PaymentCard(
         )
 
         Text(
-            text = cardInfo.cardNumber.maskCardNumber(),
+            text = cardInfo.maskedCardNumber(2),
             modifier = Modifier
                 .constrainAs(cardNumber) {
                     start.linkTo(chip.start)
@@ -92,7 +92,7 @@ fun PaymentCard(
         )
 
         Text(
-            text = cardInfo.expiredDate.expiredFormat(),
+            text = cardInfo.formatExpiredDate(),
             modifier = Modifier
                 .constrainAs(expiredDate) {
                     start.linkTo(ownerName.end)
@@ -110,23 +110,6 @@ fun PaymentCard(
             textAlign = TextAlign.End,
         )
     }
-}
-
-private fun String.maskCardNumber(): String {
-    val groups = filter { it.isDigit() }.chunked(4)
-
-    return groups.mapIndexed { index, group ->
-        if (index < 2) {
-            group
-        } else {
-            "*".repeat(group.length)
-        }
-    }.joinToString(" - ")
-}
-
-private fun String.expiredFormat(): String {
-    val groups = filter { it.isDigit() }.chunked(2)
-    return groups.joinToString(" / ")
 }
 
 @Preview
