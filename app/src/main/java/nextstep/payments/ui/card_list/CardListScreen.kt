@@ -82,65 +82,109 @@ fun CardListScreen(
             )
         }
     ) { innerPadding ->
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize()
-                .background(Color.White),
-        ) {
-            /**
-             * 각 상황에 따른 UI를 미리 분리해 두는 것이 요구사항이 변경되었을 때 더 대응하기 쉽다고 생각해 when 절을 사용했습니다.
-             * Compound Component 패턴을 적용해야 할지 고민해봤는데, 적용해야 하는 이유와 어떻게 적용할지를 떠올리지 못했습니다.
-             * https://wisemuji.medium.com/jetpack-compose-ui-%EC%A1%B0%ED%95%A9-composition-%ED%95%98%EA%B8%B0-%EC%8B%AC%ED%99%94-33910e8f09df
-             */
-            when (val cards = state.cards) {
-                CreditCardUiState.Empty -> {
-                    Text(
-                        text = stringResource(R.string.card_list_add_new_card),
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp,
-                        modifier = Modifier
-                            .padding(vertical = 32.dp)
-                    )
-                    PaymentCardAdd(
-                        modifier = Modifier.clickable {
-                            navigateToNewCard()
-                        }
-                    )
-                }
-
-                is CreditCardUiState.Many -> {
-                    LazyColumn(
-                        verticalArrangement = Arrangement.spacedBy(32.dp),
-                    ) {
-                        items(
-                            items = cards.creditCards,
-                            key = {
-                                it.cardNumber
-                            }
-                        ) {
-                            PaymentCard(
-                                cardInfo = it,
-                            )
-                        }
-                    }
-                }
-
-                is CreditCardUiState.One -> {
-                    PaymentCard(
-                        cardInfo = cards.creditCard
-                    )
-                    Spacer(modifier = Modifier.padding(bottom = 32.dp))
-                    PaymentCardAdd(
-                        modifier = Modifier.clickable {
-                            navigateToNewCard()
-                        }
-                    )
-                }
+        /**
+         * 각 상황에 따른 UI를 미리 분리해 두는 것이 요구사항이 변경되었을 때 더 대응하기 쉽다고 생각해 when 절을 사용했습니다.
+         * Compound Component 패턴을 적용해야 할지 고민해봤는데, 적용해야 하는 이유와 어떻게 적용할지를 떠올리지 못했습니다.
+         * https://wisemuji.medium.com/jetpack-compose-ui-%EC%A1%B0%ED%95%A9-composition-%ED%95%98%EA%B8%B0-%EC%8B%AC%ED%99%94-33910e8f09df
+         */
+        when (val cards = state.cards) {
+            CreditCardUiState.Empty -> {
+                EmptyCardScreen(
+                    modifier = Modifier.padding(innerPadding),
+                    navigateToNewCard = navigateToNewCard,
+                )
             }
 
+            is CreditCardUiState.Many -> {
+                ManyCardScreen(
+                    state = cards,
+                    modifier = Modifier.padding(innerPadding),
+                )
+            }
+
+            is CreditCardUiState.One -> {
+                OneCardScreen(
+                    state = cards,
+                    navigateToNewCard = navigateToNewCard,
+                    modifier = Modifier.padding(innerPadding),
+                )
+            }
         }
+    }
+}
+
+@Composable
+private fun EmptyCardScreen(
+    modifier: Modifier = Modifier,
+    navigateToNewCard: () -> Unit,
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier
+            .fillMaxSize()
+            .background(Color.White),
+    ) {
+        Text(
+            text = stringResource(R.string.card_list_add_new_card),
+            fontWeight = FontWeight.Bold,
+            fontSize = 18.sp,
+            modifier = Modifier
+                .padding(vertical = 32.dp)
+        )
+        PaymentCardAdd(
+            modifier = Modifier.clickable {
+                navigateToNewCard()
+            }
+        )
+    }
+}
+
+@Composable
+private fun ManyCardScreen(
+    state: CreditCardUiState.Many,
+    modifier: Modifier = Modifier,
+) {
+    LazyColumn(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(32.dp),
+        modifier = modifier
+            .fillMaxSize()
+            .background(Color.White)
+    ) {
+        items(
+            items = state.creditCards,
+            key = {
+                it.cardNumber
+            }
+        ) {
+            PaymentCard(
+                cardInfo = it,
+            )
+        }
+    }
+}
+
+@Composable
+fun OneCardScreen(
+    state: CreditCardUiState.One,
+    navigateToNewCard: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier
+            .fillMaxSize()
+            .background(Color.White),
+    ) {
+        PaymentCard(
+            cardInfo = state.creditCard
+        )
+        Spacer(modifier = Modifier.padding(bottom = 32.dp))
+        PaymentCardAdd(
+            modifier = Modifier.clickable {
+                navigateToNewCard()
+            }
+        )
     }
 }
 
