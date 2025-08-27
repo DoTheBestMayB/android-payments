@@ -48,7 +48,9 @@ fun NewCardScreenRoot(
     // 그런데 이렇게 작성하면 사용되는 장소와 사용하는 장소가 분리되어 적절하지 않다고 생각됩니다.
     // 어떻게 수정하는 것이 좋을지 궁금합니다.
     val context = LocalContext.current
-    val cardAddFailMessage = stringResource(R.string.card_list_add_new_card_fail)
+    val cardAddFailMessage = remember {
+        context.getString(R.string.card_list_add_new_card_fail)
+    }
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
