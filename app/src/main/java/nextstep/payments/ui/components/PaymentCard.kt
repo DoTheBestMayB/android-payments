@@ -45,8 +45,8 @@ fun PaymentCard(
         Box(
             modifier = Modifier
                 .constrainAs(chip) {
-                    start.linkTo(parent.start, margin = 14.dp)
-                    centerVerticallyTo(parent, 0.45f)
+                    centerHorizontallyTo(parent, 0.1197f)
+                    centerVerticallyTo(parent, 0.3562f)
                 }
                 .size(width = 40.dp, height = 26.dp)
                 .background(
@@ -106,7 +106,7 @@ fun PaymentCard(
             color = Color.White,
             fontWeight = FontWeight.W500,
             maxLines = 1,
-            autoSize = TextAutoSize.StepBased(),
+            autoSize = TextAutoSize.StepBased(maxFontSize = 12.sp),
             textAlign = TextAlign.End,
         )
     }
