@@ -21,6 +21,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -129,8 +131,13 @@ fun NewCardScreen(
                 visualTransformation = CardNumberTransformation(),
                 label = { Text(stringResource(R.string.card_number_label)) },
                 placeholder = { Text(stringResource(R.string.card_number_placeholder)) },
-                modifier = Modifier.fillMaxWidth(),
-            )
+                modifier = Modifier
+                    .semantics {
+                        contentDescription = "카드 번호 입력"
+                    }
+                    .fillMaxWidth(),
+
+                )
 
             OutlinedTextField(
                 value = state.expiredDate,
@@ -144,7 +151,11 @@ fun NewCardScreen(
                 visualTransformation = CardExpiryTransformation(),
                 label = { Text(stringResource(R.string.expired_date_label)) },
                 placeholder = { Text(stringResource(R.string.expired_date_placeholder)) },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .semantics {
+                        contentDescription = "만료일 입력"
+                    }
+                    .fillMaxWidth(),
             )
 
             OutlinedTextField(
@@ -157,7 +168,11 @@ fun NewCardScreen(
                 ),
                 label = { Text(stringResource(R.string.owner_name_label)) },
                 placeholder = { Text(stringResource(R.string.owner_name_placeholder)) },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .semantics {
+                        contentDescription = "카드 소유자 이름 입력"
+                    }
+                    .fillMaxWidth(),
             )
 
             OutlinedTextField(
@@ -171,7 +186,11 @@ fun NewCardScreen(
                 ),
                 label = { Text(stringResource(R.string.password_label)) },
                 placeholder = { Text(stringResource(R.string.password_placeholder)) },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .semantics {
+                        contentDescription = "카드 비밀번호 입력"
+                    }
+                    .fillMaxWidth(),
                 visualTransformation = PasswordVisualTransformation(),
             )
         }
