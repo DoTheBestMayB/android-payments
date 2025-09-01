@@ -67,7 +67,7 @@ fun NewCardScreenRoot(
         }
     }
 
-    val isAddEnabled by remember(state) {
+    val isAddEnabled by remember {
         derivedStateOf {
             CardInputValidator.isCardNumberValid(state.cardNumber) &&
                     CardInputValidator.isExpiredDateValid(state.expiredDate) &&
