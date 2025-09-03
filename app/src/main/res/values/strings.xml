@@ -8,4 +8,8 @@
     <string name="password_placeholder">0000</string>
     <string name="owner_name_label">카드 소유자 이름(선택)</string>
     <string name="owner_name_placeholder">카드에 표시된 이름을 입력하세요.</string>
+    <string name="card_list_title">Payments</string>
+    <string name="card_list_add_new_card">새로운 카드를 등록해주세요</string>
+    <string name="card_list_add_new_card_top_bar">추가</string>
+    <string name="card_list_add_new_card_fail">카드 등록에 실패했습니다.</string>
 </resources>
