@@ -4,7 +4,7 @@
 
 ### Step2 피드백
 - [x] Screen composable에 internal 접근자 붙이기
-- [ ] CardListViewModel의 검증 로직을 CardInputValidator로 분리하기
+- [x] NewCardViewModel의 검증 로직을 CardInputValidator로 분리하기
 
 ### Step3 구현 요구사항
 - 카드 추가 화면

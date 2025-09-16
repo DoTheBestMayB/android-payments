@@ -41,43 +41,23 @@ class NewCardViewModel(
 
     private fun setCardNumber(cardNumber: String) {
         val digits = cardNumber.filter { it.isDigit() }
-
-        // 최대 길이를 초과한 입력은 무시
-        if (digits.length > CardInputValidator.CARD_NUMBER_MAX_LENGTH) {
-            return
-        }
-
-        _cardState.update {
-            it.copy(
-                cardNumber = digits
-            )
+        if (CardInputValidator.isCardNumberInputValid(digits)) {
+            _cardState.update {
+                it.copy(
+                    cardNumber = digits
+                )
+            }
         }
     }
 
     private fun setExpiredDate(expiredDate: String) {
-        val digits = expiredDate.filter { it.isDigit() }
-
-        // 최대 길이를 초과한 입력은 무시
-        if (digits.length > CardInputValidator.CARD_EXPIRED_DATE_MAX_LENGTH) {
-            return
-        }
-
-        if (digits.length >= 2) {
-            val mm = digits.substring(0, 2).toInt()
-            if (mm !in MONTH_RANGE) {
-                return
+        val digitOnly = expiredDate.filter { it.isDigit() }
+        if (CardInputValidator.isExpiredDateInputValid(digitOnly)) {
+            _cardState.update {
+                it.copy(
+                    expiredDate = digitOnly,
+                )
             }
-        } else if (digits.length == 1) {
-            val first = digits[0]
-            if (first !in FIRST_MONTH_DIGIT_RANGE) {
-                return
-            }
-        }
-
-        _cardState.update {
-            it.copy(
-                expiredDate = digits,
-            )
         }
     }
 
@@ -90,14 +70,12 @@ class NewCardViewModel(
     }
 
     private fun setPassword(password: String) {
-        if (password.length > CardInputValidator.CARD_PASSWORD_MAX_LENGTH
-            || password.lastOrNull()?.isDigit() == false
-        ) {
-            return
+        if (CardInputValidator.isPasswordInputValid(password)) {
+            _cardState.update {
+                it.copy(password = password)
+            }
         }
-        _cardState.update {
-            it.copy(password = password)
-        }
+
     }
 
     // isAddEnabled 조건을 통해 입력 값이 올바른지 검증하기는 했으나, 여기서 한 번 더 입력 조건이 올바른지 학인하도록 했습니다.
@@ -126,10 +104,5 @@ class NewCardViewModel(
                 eventChannel.send(event)
             }
         }
-    }
-
-    companion object {
-        private val FIRST_MONTH_DIGIT_RANGE = '0'..'1'
-        private val MONTH_RANGE = 1..12
     }
 }
