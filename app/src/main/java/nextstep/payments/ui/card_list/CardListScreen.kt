@@ -51,7 +51,7 @@ fun CardListScreenRoot(
 }
 
 @Composable
-fun CardListScreen(
+internal fun CardListScreen(
     state: CardListState,
     navigateToNewCard: () -> Unit,
     modifier: Modifier = Modifier,

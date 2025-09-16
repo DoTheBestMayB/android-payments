@@ -84,7 +84,7 @@ fun NewCardScreenRoot(
 }
 
 @Composable
-fun NewCardScreen(
+internal fun NewCardScreen(
     state: NewCardState,
     isAddEnabled: Boolean,
     onAction: (NewCardAction) -> Unit,
