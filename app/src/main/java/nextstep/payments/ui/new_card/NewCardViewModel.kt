@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import nextstep.payments.data.card.CardEntity
 import nextstep.payments.data.card.PaymentCardRepository
+import nextstep.payments.ui.mapper.toData
 
 class NewCardViewModel(
     private val cardRepository: PaymentCardRepository = PaymentCardRepository,
@@ -23,11 +24,21 @@ class NewCardViewModel(
 
     fun onAction(action: NewCardAction) {
         when (action) {
-            is NewCardAction.OnCartNumberChange -> setCardNumber(action.cardNumber)
-            is NewCardAction.OnExpiredDateChange -> setExpiredDate(action.expiredDate)
-            is NewCardAction.OnOwnerNameChange -> setOwnerName(action.ownerName)
-            is NewCardAction.OnPasswordChange -> setPassword(action.password)
-            NewCardAction.OnAddCardClick -> addCard()
+            is NewCardAction.OnCartNumberChange -> {
+                setCardNumber(action.cardNumber)
+            }
+            is NewCardAction.OnExpiredDateChange -> {
+                setExpiredDate(action.expiredDate)
+            }
+            is NewCardAction.OnOwnerNameChange -> {
+                setOwnerName(action.ownerName)
+            }
+            is NewCardAction.OnPasswordChange -> {
+                setPassword(action.password)
+            }
+            NewCardAction.OnAddCardClick -> {
+                addCard()
+            }
             NewCardAction.OnBackClick -> {
                 // 현재 상황에서는 이러한 로직이 불필요해 보이지만, eventChannel이 꽉차서 send에 실패할 경우 재시도할 수 있도록 trySend 대신 send를 이용했습니다.
                 // 하지만 trySend 대신 send를 이용할 경우 coroutineScope이 필요합니다.
@@ -37,7 +48,17 @@ class NewCardViewModel(
                 }
             }
 
-            is NewCardAction.OnCardSelect -> setCardCompany(action.cardType)
+            is NewCardAction.OnBottomSheetCardSelect -> {
+                setCardCompany(action.cardType)
+            }
+
+            NewCardAction.OnPreviewCardSelect -> {
+                _cardState.update {
+                    it.copy(
+                        showBottomSheet = true,
+                    )
+                }
+            }
         }
     }
 
@@ -93,6 +114,7 @@ class NewCardViewModel(
                     expiredDate = _cardState.value.expiredDate,
                     ownerName = _cardState.value.ownerName,
                     password = _cardState.value.password,
+                    company = _cardState.value.cardType.toData(),
                 )
             )
 

@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import nextstep.payments.ui.common.model.CreditCard
+import nextstep.payments.ui.new_card.CardType
 import nextstep.payments.ui.theme.PaymentsTheme
 
 /**
@@ -36,11 +37,11 @@ fun PaymentCard(
             .shadow(8.dp)
             .size(width = 208.dp, height = 124.dp)
             .background(
-                color = Color(0xFF333333),
+                color = Color(cardInfo.company.color),
                 shape = RoundedCornerShape(5.dp),
             )
     ) {
-        val (chip, cardNumber, expiredDate, ownerName) = createRefs()
+        val (chip, cardNumber, expiredDate, ownerName, companyName) = createRefs()
 
         Box(
             modifier = Modifier
@@ -53,6 +54,19 @@ fun PaymentCard(
                     color = Color(0xFFCBBA64),
                     shape = RoundedCornerShape(4.dp),
                 )
+        )
+
+        Text(
+            text = cardInfo.company.companyName,
+            color = Color.White,
+            modifier = Modifier
+                .constrainAs(companyName) {
+                    start.linkTo(chip.start)
+                    top.linkTo(parent.top)
+                    bottom.linkTo(chip.top)
+                },
+            fontWeight = FontWeight.W400,
+            fontSize = 12.sp,
         )
 
         Text(
@@ -121,6 +135,7 @@ private fun PaymentCardPreview() {
                 cardNumber = "1111111111111111",
                 expiredDate = "1111",
                 ownerName = "Elon Reeve Musk Long Long Long",
+                company = CardType.BC
             )
         )
     }

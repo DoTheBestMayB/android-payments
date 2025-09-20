@@ -3,6 +3,7 @@
 package nextstep.payments.ui.new_card
 
 import android.widget.Toast
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
@@ -45,6 +46,7 @@ import nextstep.payments.R
 import nextstep.payments.common.ObserveAsEvents
 import nextstep.payments.ui.common.CardExpiryTransformation
 import nextstep.payments.ui.common.CardNumberTransformation
+import nextstep.payments.ui.common.model.CreditCard
 import nextstep.payments.ui.components.PaymentCard
 import nextstep.payments.ui.theme.PaymentsTheme
 
@@ -123,7 +125,15 @@ internal fun NewCardScreen(
         ) {
             Spacer(modifier = Modifier.height(14.dp))
 
-            PaymentCard()
+            PaymentCard(
+                cardInfo = CreditCard(
+                    company = state.cardType
+                ),
+                modifier = Modifier
+                    .clickable {
+                        onAction(NewCardAction.OnPreviewCardSelect)
+                    }
+            )
 
             Spacer(modifier = Modifier.height(10.dp))
 
@@ -207,7 +217,7 @@ internal fun NewCardScreen(
     if (state.showBottomSheet) {
         CardSelectSheet(
             onCardSelect = {
-                onAction(NewCardAction.OnCardSelect(it))
+                onAction(NewCardAction.OnBottomSheetCardSelect(it))
             }
         )
     }
