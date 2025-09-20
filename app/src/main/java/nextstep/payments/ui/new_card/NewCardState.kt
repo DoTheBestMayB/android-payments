@@ -5,6 +5,8 @@ data class NewCardState(
     val expiredDate: String = "",
     val ownerName: String = "",
     val password: String = "",
+    val showBottomSheet: Boolean = true,
+    val cardType: CardType = CardType.NOT_SELECTED,
 ) {
     fun isValid(cardInputValidator: CardInputValidator): Boolean {
         return cardInputValidator.isCardNumberValid(cardNumber) &&

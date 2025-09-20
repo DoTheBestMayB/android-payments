@@ -7,4 +7,5 @@ sealed interface NewCardAction {
     data class OnPasswordChange(val password: String) : NewCardAction
     data object OnAddCardClick : NewCardAction
     data object OnBackClick : NewCardAction
+    data class OnCardSelect(val cardType: CardType) : NewCardAction
 }

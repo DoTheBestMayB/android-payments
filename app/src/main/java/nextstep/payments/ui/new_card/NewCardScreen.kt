@@ -1,25 +1,35 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package nextstep.payments.ui.new_card
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.ModalBottomSheetProperties
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -30,6 +40,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.launch
 import nextstep.payments.R
 import nextstep.payments.common.ObserveAsEvents
 import nextstep.payments.ui.common.CardExpiryTransformation
@@ -195,6 +206,59 @@ internal fun NewCardScreen(
             )
         }
     }
+
+    if (state.showBottomSheet) {
+        CardSelectSheet(
+            onCardSelect = {
+                onAction(NewCardAction.OnCardSelect(it))
+            }
+        )
+    }
+}
+
+@Composable
+private fun CardSelectSheet(
+    onCardSelect: (CardType) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val sheetState = rememberModalBottomSheetState()
+    val scope = rememberCoroutineScope()
+
+    ModalBottomSheet(
+        onDismissRequest = { },
+        sheetState = sheetState,
+        properties = ModalBottomSheetProperties(
+            shouldDismissOnBackPress = false,
+            shouldDismissOnClickOutside = false,
+        ),
+        containerColor = Color.White,
+        modifier = modifier,
+    ) {
+        FlowRow(
+            modifier = Modifier.padding(vertical = 24.dp, horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            maxItemsInEachRow = 4,
+        ) {
+            for (card in CardType.entries) {
+                if (card == CardType.NOT_SELECTED) {
+                    continue
+                }
+                CardSelectItem(
+                    companyImage = painterResource(id = card.imageResource),
+                    companyName = card.companyName,
+                    onClick = {
+                        onCardSelect(card)
+                        scope.launch {
+                            sheetState.hide()
+                        }
+                    },
+                    modifier = Modifier
+                        .weight(1f)
+                        .aspectRatio(1f)
+                )
+            }
+        }
+    }
 }
 
 @Preview
@@ -207,6 +271,7 @@ private fun NewCardScreenPreview() {
                 expiredDate = "0000",
                 ownerName = "홍길동",
                 password = "0000",
+                showBottomSheet = false,
             ),
             isAddEnabled = true,
             onAction = { },

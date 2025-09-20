@@ -36,6 +36,8 @@ class NewCardViewModel(
                     eventChannel.send(NewCardEvent.NavigateBack)
                 }
             }
+
+            is NewCardAction.OnCardSelect -> setCardCompany(action.cardType)
         }
     }
 
@@ -103,6 +105,15 @@ class NewCardViewModel(
             viewModelScope.launch {
                 eventChannel.send(event)
             }
+        }
+    }
+
+    private fun setCardCompany(cardType: CardType) {
+        _cardState.update {
+            it.copy(
+                cardType = cardType,
+                showBottomSheet = false,
+            )
         }
     }
 }
