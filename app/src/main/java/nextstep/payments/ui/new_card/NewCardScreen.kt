@@ -55,14 +55,7 @@ fun NewCardScreenRoot(
     viewModel: NewCardViewModel = viewModel(),
 ) {
     val state by viewModel.cardState.collectAsStateWithLifecycle()
-
-    // Q. ObserveAsEvents block은 composable block이 아니기 때문에, 여기서 context와 문구를 선언한 후 사용했습니다.
-    // 그런데 이렇게 작성하면 사용되는 장소와 사용하는 장소가 분리되어 적절하지 않다고 생각됩니다.
-    // 어떻게 수정하는 것이 좋을지 궁금합니다.
     val context = LocalContext.current
-    val cardAddFailMessage = remember {
-        context.getString(R.string.card_list_add_new_card_fail)
-    }
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
@@ -71,7 +64,11 @@ fun NewCardScreenRoot(
             }
 
             NewCardEvent.CardAddFail -> {
-                Toast.makeText(context, cardAddFailMessage, Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.card_list_add_new_card_fail),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
 
             NewCardEvent.NavigateBack -> {
