@@ -16,6 +16,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.movableContentOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -87,16 +89,21 @@ internal fun CardListScreen(
             )
         }
     ) { innerPadding ->
-        /**
-         * 각 상황에 따른 UI를 미리 분리해 두는 것이 요구사항이 변경되었을 때 더 대응하기 쉽다고 생각해 when 절을 사용했습니다.
-         * Compound Component 패턴을 적용해야 할지 고민해봤는데, 적용해야 하는 이유와 어떻게 적용할지를 떠올리지 못했습니다.
-         * https://wisemuji.medium.com/jetpack-compose-ui-%EC%A1%B0%ED%95%A9-composition-%ED%95%98%EA%B8%B0-%EC%8B%AC%ED%99%94-33910e8f09df
-         */
+        val paymentCardAdd = remember {
+            movableContentOf {
+                PaymentCardAdd(
+                    modifier = Modifier.clickable {
+                        navigateToNewCard()
+                    }
+                )
+            }
+        }
+
         when (val cards = state.cards) {
             CreditCardUiState.Empty -> {
                 EmptyCardScreen(
                     modifier = Modifier.padding(innerPadding),
-                    navigateToNewCard = navigateToNewCard,
+                    newCardAddContent = paymentCardAdd,
                 )
             }
 
@@ -110,7 +117,7 @@ internal fun CardListScreen(
             is CreditCardUiState.One -> {
                 OneCardScreen(
                     state = cards,
-                    navigateToNewCard = navigateToNewCard,
+                    newCardAddContent = paymentCardAdd,
                     modifier = Modifier.padding(innerPadding),
                 )
             }
@@ -121,7 +128,7 @@ internal fun CardListScreen(
 @Composable
 private fun EmptyCardScreen(
     modifier: Modifier = Modifier,
-    navigateToNewCard: () -> Unit,
+    newCardAddContent: @Composable () -> Unit,
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -138,11 +145,7 @@ private fun EmptyCardScreen(
                 }
                 .padding(vertical = 32.dp)
         )
-        PaymentCardAdd(
-            modifier = Modifier.clickable {
-                navigateToNewCard()
-            }
-        )
+        newCardAddContent()
     }
 }
 
@@ -173,7 +176,7 @@ private fun ManyCardScreen(
 @Composable
 fun OneCardScreen(
     state: CreditCardUiState.One,
-    navigateToNewCard: () -> Unit,
+    newCardAddContent: @Composable () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -185,11 +188,7 @@ fun OneCardScreen(
             cardInfo = state.creditCard
         )
         Spacer(modifier = Modifier.padding(bottom = 32.dp))
-        PaymentCardAdd(
-            modifier = Modifier.clickable {
-                navigateToNewCard()
-            }
-        )
+        newCardAddContent()
     }
 }
 
