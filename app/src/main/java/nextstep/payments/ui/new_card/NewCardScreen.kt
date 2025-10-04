@@ -100,6 +100,13 @@ internal fun NewCardScreen(
     onAction: (NewCardAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val cardNumberTransformation = remember {
+        CardNumberTransformation()
+    }
+    val cardExpiryTransformation = remember {
+        CardExpiryTransformation()
+    }
+
     Scaffold(
         topBar = {
             NewCardTopBar(
@@ -146,7 +153,7 @@ internal fun NewCardScreen(
                     keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Next,
                 ),
-                visualTransformation = CardNumberTransformation(),
+                visualTransformation = cardNumberTransformation,
                 label = { Text(stringResource(R.string.card_number_label)) },
                 placeholder = { Text(stringResource(R.string.card_number_placeholder)) },
                 modifier = Modifier
@@ -166,7 +173,7 @@ internal fun NewCardScreen(
                     keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Next,
                 ),
-                visualTransformation = CardExpiryTransformation(),
+                visualTransformation = cardExpiryTransformation,
                 label = { Text(stringResource(R.string.expired_date_label)) },
                 placeholder = { Text(stringResource(R.string.expired_date_placeholder)) },
                 modifier = Modifier
