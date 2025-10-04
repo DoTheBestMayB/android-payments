@@ -241,6 +241,8 @@ private fun CardSelectSheet(
     ModalBottomSheet(
         onDismissRequest = { },
         sheetState = sheetState,
+        sheetGesturesEnabled = false,
+        dragHandle = null,
         properties = ModalBottomSheetProperties(
             shouldDismissOnBackPress = false,
             shouldDismissOnClickOutside = false,
