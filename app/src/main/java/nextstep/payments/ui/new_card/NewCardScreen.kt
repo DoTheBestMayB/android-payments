@@ -263,9 +263,10 @@ private fun CardSelectSheet(
                     companyImage = painterResource(id = card.imageResource),
                     companyName = card.companyName,
                     onClick = {
-                        onCardSelect(card)
                         scope.launch {
                             sheetState.hide()
+                        }.invokeOnCompletion {
+                            onCardSelect(card)
                         }
                     },
                     modifier = Modifier
