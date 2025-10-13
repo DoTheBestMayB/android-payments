@@ -1,5 +1,6 @@
 package nextstep.payments.ui.common.model
 
+import nextstep.payments.ui.new_card.CardType
 import kotlin.text.filter
 
 /**
@@ -9,6 +10,7 @@ data class CreditCard(
     val cardNumber: String = "",
     val expiredDate: String = "",
     val ownerName: String = "",
+    val company: CardType = CardType.NOT_SELECTED,
 ) {
     fun formatExpiredDate(): String {
         val groups = expiredDate.filter { it.isDigit() }.chunked(2)

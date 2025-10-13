@@ -5,4 +5,5 @@ data class CardEntity(
     val expiredDate: String = "",
     val ownerName: String = "",
     val password: String = "",
+    val company: CardTypeEntity = CardTypeEntity.NOT_SELECTED,
 )

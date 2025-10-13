@@ -1,25 +1,36 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package nextstep.payments.ui.new_card
 
 import android.widget.Toast
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.ModalBottomSheetProperties
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -30,10 +41,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.launch
 import nextstep.payments.R
 import nextstep.payments.common.ObserveAsEvents
 import nextstep.payments.ui.common.CardExpiryTransformation
 import nextstep.payments.ui.common.CardNumberTransformation
+import nextstep.payments.ui.common.model.CreditCard
 import nextstep.payments.ui.components.PaymentCard
 import nextstep.payments.ui.theme.PaymentsTheme
 
@@ -44,14 +57,7 @@ fun NewCardScreenRoot(
     viewModel: NewCardViewModel = viewModel(),
 ) {
     val state by viewModel.cardState.collectAsStateWithLifecycle()
-
-    // Q. ObserveAsEvents block은 composable block이 아니기 때문에, 여기서 context와 문구를 선언한 후 사용했습니다.
-    // 그런데 이렇게 작성하면 사용되는 장소와 사용하는 장소가 분리되어 적절하지 않다고 생각됩니다.
-    // 어떻게 수정하는 것이 좋을지 궁금합니다.
     val context = LocalContext.current
-    val cardAddFailMessage = remember {
-        context.getString(R.string.card_list_add_new_card_fail)
-    }
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
@@ -60,7 +66,11 @@ fun NewCardScreenRoot(
             }
 
             NewCardEvent.CardAddFail -> {
-                Toast.makeText(context, cardAddFailMessage, Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.card_list_add_new_card_fail),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
 
             NewCardEvent.NavigateBack -> {
@@ -84,12 +94,19 @@ fun NewCardScreenRoot(
 }
 
 @Composable
-fun NewCardScreen(
+internal fun NewCardScreen(
     state: NewCardState,
     isAddEnabled: Boolean,
     onAction: (NewCardAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val cardNumberTransformation = remember {
+        CardNumberTransformation()
+    }
+    val cardExpiryTransformation = remember {
+        CardExpiryTransformation()
+    }
+
     Scaffold(
         topBar = {
             NewCardTopBar(
@@ -115,7 +132,15 @@ fun NewCardScreen(
         ) {
             Spacer(modifier = Modifier.height(14.dp))
 
-            PaymentCard()
+            PaymentCard(
+                cardInfo = CreditCard(
+                    company = state.cardType
+                ),
+                modifier = Modifier
+                    .clickable {
+                        onAction(NewCardAction.OnPreviewCardSelect)
+                    }
+            )
 
             Spacer(modifier = Modifier.height(10.dp))
 
@@ -128,7 +153,7 @@ fun NewCardScreen(
                     keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Next,
                 ),
-                visualTransformation = CardNumberTransformation(),
+                visualTransformation = cardNumberTransformation,
                 label = { Text(stringResource(R.string.card_number_label)) },
                 placeholder = { Text(stringResource(R.string.card_number_placeholder)) },
                 modifier = Modifier
@@ -148,7 +173,7 @@ fun NewCardScreen(
                     keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Next,
                 ),
-                visualTransformation = CardExpiryTransformation(),
+                visualTransformation = cardExpiryTransformation,
                 label = { Text(stringResource(R.string.expired_date_label)) },
                 placeholder = { Text(stringResource(R.string.expired_date_placeholder)) },
                 modifier = Modifier
@@ -195,6 +220,62 @@ fun NewCardScreen(
             )
         }
     }
+
+    if (state.showBottomSheet) {
+        CardSelectSheet(
+            onCardSelect = {
+                onAction(NewCardAction.OnBottomSheetCardSelect(it))
+            }
+        )
+    }
+}
+
+@Composable
+private fun CardSelectSheet(
+    onCardSelect: (CardType) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val sheetState = rememberModalBottomSheetState()
+    val scope = rememberCoroutineScope()
+
+    ModalBottomSheet(
+        onDismissRequest = { },
+        sheetState = sheetState,
+        sheetGesturesEnabled = false,
+        dragHandle = null,
+        properties = ModalBottomSheetProperties(
+            shouldDismissOnBackPress = false,
+            shouldDismissOnClickOutside = false,
+        ),
+        containerColor = Color.White,
+        modifier = modifier,
+    ) {
+        FlowRow(
+            modifier = Modifier.padding(vertical = 24.dp, horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            maxItemsInEachRow = 4,
+        ) {
+            for (card in CardType.entries) {
+                if (card == CardType.NOT_SELECTED) {
+                    continue
+                }
+                CardSelectItem(
+                    companyImage = painterResource(id = card.imageResource),
+                    companyName = card.companyName,
+                    onClick = {
+                        scope.launch {
+                            sheetState.hide()
+                        }.invokeOnCompletion {
+                            onCardSelect(card)
+                        }
+                    },
+                    modifier = Modifier
+                        .weight(1f)
+                        .aspectRatio(1f)
+                )
+            }
+        }
+    }
 }
 
 @Preview
@@ -207,6 +288,7 @@ private fun NewCardScreenPreview() {
                 expiredDate = "0000",
                 ownerName = "홍길동",
                 password = "0000",
+                showBottomSheet = false,
             ),
             isAddEnabled = true,
             onAction = { },

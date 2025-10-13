@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import nextstep.payments.data.card.CardEntity
 import nextstep.payments.data.card.PaymentCardRepository
+import nextstep.payments.ui.mapper.toData
 
 class NewCardViewModel(
     private val cardRepository: PaymentCardRepository = PaymentCardRepository,
@@ -23,11 +24,21 @@ class NewCardViewModel(
 
     fun onAction(action: NewCardAction) {
         when (action) {
-            is NewCardAction.OnCartNumberChange -> setCardNumber(action.cardNumber)
-            is NewCardAction.OnExpiredDateChange -> setExpiredDate(action.expiredDate)
-            is NewCardAction.OnOwnerNameChange -> setOwnerName(action.ownerName)
-            is NewCardAction.OnPasswordChange -> setPassword(action.password)
-            NewCardAction.OnAddCardClick -> addCard()
+            is NewCardAction.OnCartNumberChange -> {
+                setCardNumber(action.cardNumber)
+            }
+            is NewCardAction.OnExpiredDateChange -> {
+                setExpiredDate(action.expiredDate)
+            }
+            is NewCardAction.OnOwnerNameChange -> {
+                setOwnerName(action.ownerName)
+            }
+            is NewCardAction.OnPasswordChange -> {
+                setPassword(action.password)
+            }
+            NewCardAction.OnAddCardClick -> {
+                addCard()
+            }
             NewCardAction.OnBackClick -> {
                 // 현재 상황에서는 이러한 로직이 불필요해 보이지만, eventChannel이 꽉차서 send에 실패할 경우 재시도할 수 있도록 trySend 대신 send를 이용했습니다.
                 // 하지만 trySend 대신 send를 이용할 경우 coroutineScope이 필요합니다.
@@ -36,48 +47,40 @@ class NewCardViewModel(
                     eventChannel.send(NewCardEvent.NavigateBack)
                 }
             }
+
+            is NewCardAction.OnBottomSheetCardSelect -> {
+                setCardCompany(action.cardType)
+            }
+
+            NewCardAction.OnPreviewCardSelect -> {
+                _cardState.update {
+                    it.copy(
+                        showBottomSheet = true,
+                    )
+                }
+            }
         }
     }
 
     private fun setCardNumber(cardNumber: String) {
         val digits = cardNumber.filter { it.isDigit() }
-
-        // 최대 길이를 초과한 입력은 무시
-        if (digits.length > CardInputValidator.CARD_NUMBER_MAX_LENGTH) {
-            return
-        }
-
-        _cardState.update {
-            it.copy(
-                cardNumber = digits
-            )
+        if (CardInputValidator.isCardNumberInputValid(digits)) {
+            _cardState.update {
+                it.copy(
+                    cardNumber = digits
+                )
+            }
         }
     }
 
     private fun setExpiredDate(expiredDate: String) {
-        val digits = expiredDate.filter { it.isDigit() }
-
-        // 최대 길이를 초과한 입력은 무시
-        if (digits.length > CardInputValidator.CARD_EXPIRED_DATE_MAX_LENGTH) {
-            return
-        }
-
-        if (digits.length >= 2) {
-            val mm = digits.substring(0, 2).toInt()
-            if (mm !in MONTH_RANGE) {
-                return
+        val digitOnly = expiredDate.filter { it.isDigit() }
+        if (CardInputValidator.isExpiredDateInputValid(digitOnly)) {
+            _cardState.update {
+                it.copy(
+                    expiredDate = digitOnly,
+                )
             }
-        } else if (digits.length == 1) {
-            val first = digits[0]
-            if (first !in FIRST_MONTH_DIGIT_RANGE) {
-                return
-            }
-        }
-
-        _cardState.update {
-            it.copy(
-                expiredDate = digits,
-            )
         }
     }
 
@@ -90,14 +93,12 @@ class NewCardViewModel(
     }
 
     private fun setPassword(password: String) {
-        if (password.length > CardInputValidator.CARD_PASSWORD_MAX_LENGTH
-            || password.lastOrNull()?.isDigit() == false
-        ) {
-            return
+        if (CardInputValidator.isPasswordInputValid(password)) {
+            _cardState.update {
+                it.copy(password = password)
+            }
         }
-        _cardState.update {
-            it.copy(password = password)
-        }
+
     }
 
     // isAddEnabled 조건을 통해 입력 값이 올바른지 검증하기는 했으나, 여기서 한 번 더 입력 조건이 올바른지 학인하도록 했습니다.
@@ -113,6 +114,7 @@ class NewCardViewModel(
                     expiredDate = _cardState.value.expiredDate,
                     ownerName = _cardState.value.ownerName,
                     password = _cardState.value.password,
+                    company = _cardState.value.cardType.toData(),
                 )
             )
 
@@ -128,8 +130,12 @@ class NewCardViewModel(
         }
     }
 
-    companion object {
-        private val FIRST_MONTH_DIGIT_RANGE = '0'..'1'
-        private val MONTH_RANGE = 1..12
+    private fun setCardCompany(cardType: CardType) {
+        _cardState.update {
+            it.copy(
+                cardType = cardType,
+                showBottomSheet = false,
+            )
+        }
     }
 }
