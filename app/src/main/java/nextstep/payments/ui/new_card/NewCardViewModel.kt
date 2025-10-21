@@ -52,6 +52,13 @@ class NewCardViewModel @JvmOverloads constructor(
         _cardState = MutableStateFlow(originalState)
     }
 
+    private val originalEntity = CardEntity(
+        originalState.cardNumber,
+        originalState.expiredDate,
+        originalState.ownerName,
+        originalState.password,
+        originalState.cardType.toData(),
+    )
     val cardState = _cardState.asStateFlow()
 
     fun onAction(action: NewCardAction) {
@@ -145,20 +152,25 @@ class NewCardViewModel @JvmOverloads constructor(
             CardInputValidator.isCardOwnerNameValid(_cardState.value.ownerName) &&
             CardInputValidator.isPasswordValid(_cardState.value.password)
         ) {
-            val isSuccess = cardRepository.addCard(
-                CardEntity(
-                    cardNumber = _cardState.value.cardNumber,
-                    expiredDate = _cardState.value.expiredDate,
-                    ownerName = _cardState.value.ownerName,
-                    password = _cardState.value.password,
-                    company = _cardState.value.cardType.toData(),
-                )
+            val cardEntity = CardEntity(
+                cardNumber = _cardState.value.cardNumber,
+                expiredDate = _cardState.value.expiredDate,
+                ownerName = _cardState.value.ownerName,
+                password = _cardState.value.password,
+                company = _cardState.value.cardType.toData(),
             )
-
-            val event = if (isSuccess) {
-                NewCardEvent.CardAddSuccess
+            val event = if (originalState != NewCardState.EMPTY) {
+                if (cardRepository.editCard(originalEntity, cardEntity)) {
+                    NewCardEvent.CardEditSuccess
+                } else {
+                    NewCardEvent.CardEditFail
+                }
             } else {
-                NewCardEvent.CardAddFail
+                if (cardRepository.addCard(cardEntity)) {
+                    NewCardEvent.CardAddSuccess
+                } else {
+                    NewCardEvent.CardAddFail
+                }
             }
 
             viewModelScope.launch {

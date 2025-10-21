@@ -61,7 +61,7 @@ fun NewCardScreenRoot(
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
-            NewCardEvent.CardAddSuccess -> {
+            NewCardEvent.CardAddSuccess, NewCardEvent.CardEditSuccess, NewCardEvent.NavigateBack -> {
                 navigateToCardList()
             }
 
@@ -73,8 +73,12 @@ fun NewCardScreenRoot(
                 ).show()
             }
 
-            NewCardEvent.NavigateBack -> {
-                navigateToCardList()
+            NewCardEvent.CardEditFail -> {
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.card_list_edit_card_fail),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
