@@ -13,7 +13,6 @@ import nextstep.payments.data.card.CardEntity
 import nextstep.payments.data.card.PaymentCardRepository
 import nextstep.payments.ui.common.model.CreditCard
 import nextstep.payments.ui.mapper.toData
-import nextstep.payments.ui.mapper.toEntity
 
 // Hilt가 아닌 기본 viewModel 함수를 이용해 ViewModel을 생성할 때, savedStateHandle와 디폴트 인자를 함께 사용하면
 // ViewModel factory가 SavedStateHandle만 받는 생성자를 찾지 못해 에러가 발생한다고 합니다.
@@ -36,7 +35,7 @@ class NewCardViewModel @JvmOverloads constructor(
 
         originalState = if (cardInfo != null) {
             // repository에서 비밀번호 알아내기
-            val pw = cardRepository.getPassword(cardInfo.toEntity())
+            val pw = cardRepository.getPassword(cardInfo.id)
 
             NewCardState(
                 cardNumber = cardInfo.cardNumber,
@@ -45,6 +44,7 @@ class NewCardViewModel @JvmOverloads constructor(
                 password = pw,
                 showBottomSheet = false,
                 cardType = cardInfo.company,
+                id = cardInfo.id,
             )
         } else {
             NewCardState.EMPTY
@@ -52,13 +52,6 @@ class NewCardViewModel @JvmOverloads constructor(
         _cardState = MutableStateFlow(originalState)
     }
 
-    private val originalEntity = CardEntity(
-        originalState.cardNumber,
-        originalState.expiredDate,
-        originalState.ownerName,
-        originalState.password,
-        originalState.cardType.toData(),
-    )
     val cardState = _cardState.asStateFlow()
 
     fun onAction(action: NewCardAction) {
@@ -153,6 +146,7 @@ class NewCardViewModel @JvmOverloads constructor(
             CardInputValidator.isPasswordValid(_cardState.value.password)
         ) {
             val cardEntity = CardEntity(
+                id = originalState.id,
                 cardNumber = _cardState.value.cardNumber,
                 expiredDate = _cardState.value.expiredDate,
                 ownerName = _cardState.value.ownerName,
@@ -160,7 +154,7 @@ class NewCardViewModel @JvmOverloads constructor(
                 company = _cardState.value.cardType.toData(),
             )
             val event = if (originalState != NewCardState.EMPTY) {
-                if (cardRepository.editCard(originalEntity, cardEntity)) {
+                if (cardRepository.editCard(originalState.id, cardEntity)) {
                     NewCardEvent.CardEditSuccess
                 } else {
                     NewCardEvent.CardEditFail

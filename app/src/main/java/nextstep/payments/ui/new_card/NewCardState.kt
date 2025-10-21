@@ -1,5 +1,7 @@
 package nextstep.payments.ui.new_card
 
+import java.util.UUID
+
 data class NewCardState(
     val cardNumber: String = "",
     val expiredDate: String = "",
@@ -7,6 +9,7 @@ data class NewCardState(
     val password: String = "",
     val showBottomSheet: Boolean = true,
     val cardType: CardType = CardType.NOT_SELECTED,
+    val id: UUID = UUID.randomUUID(),
 ) {
     fun isValid(cardInputValidator: CardInputValidator): Boolean {
         return cardInputValidator.isCardNumberValid(cardNumber) &&

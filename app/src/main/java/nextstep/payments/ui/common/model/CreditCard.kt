@@ -3,10 +3,12 @@ package nextstep.payments.ui.common.model
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import nextstep.payments.ui.new_card.CardType
+import java.util.UUID
 import kotlin.text.filter
 
 @Parcelize
 data class CreditCard(
+    val id: UUID = UUID.randomUUID(),
     val cardNumber: String = "",
     val expiredDate: String = "",
     val ownerName: String = "",
