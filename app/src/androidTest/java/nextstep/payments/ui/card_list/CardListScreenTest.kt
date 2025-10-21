@@ -19,6 +19,7 @@ class CardListScreenTest {
                     cards = CreditCardUiState.Empty
                 ),
                 navigateToNewCard = {},
+                navigateToEditCard = {},
             )
         }
 
@@ -41,6 +42,7 @@ class CardListScreenTest {
                     )
                 ),
                 navigateToNewCard = {},
+                navigateToEditCard = {},
             )
         }
 
@@ -70,6 +72,7 @@ class CardListScreenTest {
                     )
                 ),
                 navigateToNewCard = {},
+                navigateToEditCard = {},
             )
         }
 
