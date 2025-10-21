@@ -1,17 +1,17 @@
 package nextstep.payments.ui.common.model
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 import nextstep.payments.ui.new_card.CardType
 import kotlin.text.filter
 
-/**
- * 이 클래스가 common/model 하위에 있는데, 더 적절한 위치가 어디일지 궁금합니다.
- */
+@Parcelize
 data class CreditCard(
     val cardNumber: String = "",
     val expiredDate: String = "",
     val ownerName: String = "",
     val company: CardType = CardType.NOT_SELECTED,
-) {
+): Parcelable {
     fun formatExpiredDate(): String {
         val groups = expiredDate.filter { it.isDigit() }.chunked(2)
         return groups.joinToString(" / ")

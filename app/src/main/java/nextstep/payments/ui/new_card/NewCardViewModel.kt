@@ -1,5 +1,6 @@
 package nextstep.payments.ui.new_card
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.channels.Channel
@@ -10,35 +11,71 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import nextstep.payments.data.card.CardEntity
 import nextstep.payments.data.card.PaymentCardRepository
+import nextstep.payments.ui.common.model.CreditCard
 import nextstep.payments.ui.mapper.toData
+import nextstep.payments.ui.mapper.toEntity
 
-class NewCardViewModel(
+// Hilt가 아닌 기본 viewModel 함수를 이용해 ViewModel을 생성할 때, savedStateHandle와 디폴트 인자를 함께 사용하면
+// ViewModel factory가 SavedStateHandle만 받는 생성자를 찾지 못해 에러가 발생한다고 합니다.
+// 그래서 savedStateHandle만 있는 생성자를 만들기 위해 JvmOverloads를 이용했습니다.
+class NewCardViewModel @JvmOverloads constructor(
+    savedStateHandle: SavedStateHandle,
     private val cardRepository: PaymentCardRepository = PaymentCardRepository,
 ) : ViewModel() {
 
-    private val _cardState = MutableStateFlow(NewCardState())
-    val cardState = _cardState.asStateFlow()
-
     private val eventChannel = Channel<NewCardEvent> { }
     val events = eventChannel.receiveAsFlow()
+
+    private val _cardState: MutableStateFlow<NewCardState>
+
+    val originalState: NewCardState
+
+    init {
+        // 전달된 카드가 있다면 꺼내서 state에 저장하기
+        val cardInfo = savedStateHandle.remove<CreditCard>(CARD_INFO_KEY)
+
+        originalState = if (cardInfo != null) {
+            // repository에서 비밀번호 알아내기
+            val pw = cardRepository.getPassword(cardInfo.toEntity())
+
+            NewCardState(
+                cardNumber = cardInfo.cardNumber,
+                expiredDate = cardInfo.expiredDate,
+                ownerName = cardInfo.ownerName,
+                password = pw,
+                showBottomSheet = false,
+                cardType = cardInfo.company,
+            )
+        } else {
+            NewCardState.EMPTY
+        }
+        _cardState = MutableStateFlow(originalState)
+    }
+
+    val cardState = _cardState.asStateFlow()
 
     fun onAction(action: NewCardAction) {
         when (action) {
             is NewCardAction.OnCartNumberChange -> {
                 setCardNumber(action.cardNumber)
             }
+
             is NewCardAction.OnExpiredDateChange -> {
                 setExpiredDate(action.expiredDate)
             }
+
             is NewCardAction.OnOwnerNameChange -> {
                 setOwnerName(action.ownerName)
             }
+
             is NewCardAction.OnPasswordChange -> {
                 setPassword(action.password)
             }
+
             NewCardAction.OnAddCardClick -> {
                 addCard()
             }
+
             NewCardAction.OnBackClick -> {
                 // 현재 상황에서는 이러한 로직이 불필요해 보이지만, eventChannel이 꽉차서 send에 실패할 경우 재시도할 수 있도록 trySend 대신 send를 이용했습니다.
                 // 하지만 trySend 대신 send를 이용할 경우 coroutineScope이 필요합니다.
@@ -137,5 +174,9 @@ class NewCardViewModel(
                 showBottomSheet = false,
             )
         }
+    }
+
+    companion object {
+        const val CARD_INFO_KEY = "exist_card_info"
     }
 }

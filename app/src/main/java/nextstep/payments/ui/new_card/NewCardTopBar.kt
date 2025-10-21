@@ -21,10 +21,11 @@ fun NewCardTopBar(
     onBackClick: () -> Unit,
     onSaveClick: () -> Unit,
     isAddEnabled: Boolean,
+    title: String,
     modifier: Modifier = Modifier,
 ) {
     TopAppBar(
-        title = { Text("카드 추가") },
+        title = { Text(title) },
         navigationIcon = {
             IconButton(onClick = { onBackClick() }) {
                 Icon(

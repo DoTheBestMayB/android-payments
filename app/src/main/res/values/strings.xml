@@ -12,4 +12,6 @@
     <string name="card_list_add_new_card">새로운 카드를 등록해주세요</string>
     <string name="card_list_add_new_card_top_bar">추가</string>
     <string name="card_list_add_new_card_fail">카드 등록에 실패했습니다.</string>
+    <string name="new_card_top_bar_title">카드 추가</string>
+    <string name="edit_card_top_bar_title">카드 변경</string>
 </resources>

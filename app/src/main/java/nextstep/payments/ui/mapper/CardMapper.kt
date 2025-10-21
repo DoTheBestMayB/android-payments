@@ -40,3 +40,13 @@ fun CardTypeEntity.toUi(): CardType {
         CardTypeEntity.KB -> CardType.KB
     }
 }
+
+fun CreditCard.toEntity(): CardEntity {
+    return CardEntity(
+        cardNumber = cardNumber,
+        expiredDate = expiredDate,
+        ownerName = ownerName,
+        password = "",
+        company = company.toData(),
+    )
+}

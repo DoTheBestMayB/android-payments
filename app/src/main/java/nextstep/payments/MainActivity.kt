@@ -10,6 +10,7 @@ import androidx.activity.viewModels
 import nextstep.payments.ui.card_list.CardListScreenRoot
 import nextstep.payments.ui.card_list.CardListViewModel
 import nextstep.payments.ui.new_card.NewCardActivity
+import nextstep.payments.ui.new_card.NewCardViewModel
 import nextstep.payments.ui.theme.PaymentsTheme
 
 class MainActivity : ComponentActivity() {
@@ -33,7 +34,13 @@ class MainActivity : ComponentActivity() {
                     navigateToNewCard = {
                         val intent = Intent(this, NewCardActivity::class.java)
                         launcher.launch(intent)
-                    }
+                    },
+                    navigateToEditCard = {
+                        val intent = Intent(this, NewCardActivity::class.java).apply {
+                            putExtra(NewCardViewModel.CARD_INFO_KEY, it)
+                        }
+                        launcher.launch(intent)
+                    },
                 )
             }
         }

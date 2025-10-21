@@ -1,14 +1,17 @@
 package nextstep.payments.ui.new_card
 
+import android.os.Parcelable
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
+import kotlinx.parcelize.Parcelize
 import nextstep.payments.R
 
+@Parcelize
 enum class CardType(
     val companyName: String,
     @param:DrawableRes val imageResource: Int,
     @param:ColorInt val color: Int,
-) {
+): Parcelable {
     NOT_SELECTED("", 0, 0xFF333333.toInt()),
     BC("BC카드", R.drawable.bc, 0xFFF04651.toInt()),
     SHINHAN("신한카드", R.drawable.shinhan, 0xFF0046FF.toInt()),

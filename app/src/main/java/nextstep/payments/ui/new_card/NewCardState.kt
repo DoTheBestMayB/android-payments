@@ -14,4 +14,14 @@ data class NewCardState(
                 cardInputValidator.isCardOwnerNameValid(ownerName) &&
                 cardInputValidator.isPasswordValid(password)
     }
+
+    fun isCardValueSame(other: NewCardState): Boolean {
+        return cardNumber == other.cardNumber && expiredDate == other.expiredDate
+                && ownerName == other.ownerName && password == other.password
+                && cardType == other.cardType
+    }
+
+    companion object {
+        val EMPTY = NewCardState()
+    }
 }

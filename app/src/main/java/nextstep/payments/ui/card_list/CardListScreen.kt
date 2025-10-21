@@ -41,6 +41,7 @@ import nextstep.payments.ui.theme.PaymentsTheme
 fun CardListScreenRoot(
     viewModel: CardListViewModel,
     navigateToNewCard: () -> Unit,
+    navigateToEditCard: (CreditCard) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle()
@@ -48,6 +49,7 @@ fun CardListScreenRoot(
     CardListScreen(
         state = state.value,
         navigateToNewCard = navigateToNewCard,
+        navigateToEditCard = navigateToEditCard,
         modifier = modifier,
     )
 }
@@ -56,6 +58,7 @@ fun CardListScreenRoot(
 internal fun CardListScreen(
     state: CardListState,
     navigateToNewCard: () -> Unit,
+    navigateToEditCard: (CreditCard) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
@@ -110,6 +113,7 @@ internal fun CardListScreen(
             is CreditCardUiState.Many -> {
                 ManyCardScreen(
                     state = cards,
+                    navigateToEditCard = navigateToEditCard,
                     modifier = Modifier.padding(innerPadding),
                 )
             }
@@ -118,6 +122,7 @@ internal fun CardListScreen(
                 OneCardScreen(
                     state = cards,
                     newCardAddContent = paymentCardAdd,
+                    navigateToEditCard = navigateToEditCard,
                     modifier = Modifier.padding(innerPadding),
                 )
             }
@@ -152,6 +157,7 @@ private fun EmptyCardScreen(
 @Composable
 private fun ManyCardScreen(
     state: CreditCardUiState.Many,
+    navigateToEditCard: (CreditCard) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -167,6 +173,9 @@ private fun ManyCardScreen(
             }
         ) {
             PaymentCard(
+                modifier = Modifier.clickable {
+                    navigateToEditCard(it)
+                },
                 cardInfo = it,
             )
         }
@@ -177,6 +186,7 @@ private fun ManyCardScreen(
 fun OneCardScreen(
     state: CreditCardUiState.One,
     newCardAddContent: @Composable () -> Unit,
+    navigateToEditCard: (CreditCard) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -185,6 +195,9 @@ fun OneCardScreen(
             .fillMaxSize(),
     ) {
         PaymentCard(
+            modifier = Modifier.clickable {
+                navigateToEditCard(state.creditCard)
+            },
             cardInfo = state.creditCard
         )
         Spacer(modifier = Modifier.padding(bottom = 32.dp))
@@ -240,6 +253,7 @@ private fun CardListScreenPreview(
         CardListScreen(
             state = state,
             navigateToNewCard = {},
+            navigateToEditCard = {},
         )
     }
 }

@@ -15,4 +15,15 @@ object PaymentCardRepository {
         _cards.add(cardEntity)
         return true
     }
+
+    fun getPassword(target: CardEntity): String {
+        for (card in cards) {
+            // 카드 번호는 고유한 값이므로 카드 번호만 비교하도록 구현했습니다.
+            if (card.cardNumber == target.cardNumber) {
+                return card.password
+            }
+        }
+
+        return ""
+    }
 }
